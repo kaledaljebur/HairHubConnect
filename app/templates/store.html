@@ -1,0 +1,31 @@
+{% extends "layout.html" %} {% block content %}
+<h2>Online Store</h2>
+<div class="row">
+  {% for product in products %}
+  <div class="col-md-4 mb-3">
+    <div class="card">
+      {% if product.image_path %}
+      <img
+        src="{{ product.image_path }}"
+        class="card-img-top"
+        alt="{{ product.name }}"
+      />
+      {% endif %}
+      <div class="card-body">
+        <h5 class="card-title">{{ product.name }}</h5>
+        <p class="card-text">{{ product.description }}</p>
+        <p><strong>${{ product.price }}</strong></p>
+        <a
+          class="btn btn-primary"
+          href="{{ url_for('store.add_to_cart', product_id=product.id) }}"
+          >Add to Cart</a
+        >
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+<a class="btn btn-secondary mt-3" href="{{ url_for('store.cart') }}"
+  >View Cart</a
+>
+{% endblock %}

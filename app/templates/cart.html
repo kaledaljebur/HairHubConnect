@@ -1,0 +1,15 @@
+{% extends "layout.html" %} {% block content %}
+<h2>Your Cart</h2>
+<ul class="list-group mb-3">
+  {% for item in items %}
+  <li class="list-group-item">
+    {{ item.product.name }} × {{ item.quantity }} — ${{ item.product.price *
+    item.quantity }}
+  </li>
+  {% else %}
+  <li class="list-group-item">Your cart is empty.</li>
+  {% endfor %}
+</ul>
+<p><strong>Total: ${{ total }}</strong></p>
+<a class="btn btn-success" href="{{ url_for('store.checkout') }}">Checkout</a>
+{% endblock %}

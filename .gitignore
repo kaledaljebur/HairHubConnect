@@ -2,3 +2,4 @@ env/*
 # build/*
 # *.spec
 flask_session/*
+app/__pycache__/*

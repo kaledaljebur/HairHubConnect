@@ -1,0 +1,26 @@
+{% extends "layout.html" %} {% block content %}
+<h2>Book a Service</h2>
+<form method="post">
+  <div class="mb-3">
+    <label>Service:</label>
+    <select name="service" class="form-control">
+      {% for s in services %}
+      <option value="{{ s.id }}">{{ s.name }} - ${{ s.price }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="mb-3">
+    <label>Staff:</label>
+    <select name="staff" class="form-control">
+      {% for st in staff %}
+      <option value="{{ st.id }}">{{ st.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="mb-3">
+    <label>Date & Time:</label>
+    <input class="form-control" type="datetime-local" name="start" required />
+  </div>
+  <button class="btn btn-success">Book</button>
+</form>
+{% endblock %}

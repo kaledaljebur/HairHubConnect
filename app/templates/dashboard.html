@@ -1,0 +1,27 @@
+{% extends "layout.html" %} {% block content %}
+<h2>Dashboard</h2>
+
+<h4>Your Bookings</h4>
+<ul class="list-group">
+  {% for booking in bookings %}
+  <li class="list-group-item">
+    Booking ID: {{ booking.id }} | Service: {{ booking.service_id }} | Staff: {{
+    booking.staff_id }} | Time: {{ booking.start_time }} - {{ booking.end_time
+    }}
+  </li>
+  {% else %}
+  <li class="list-group-item">No bookings yet.</li>
+  {% endfor %}
+</ul>
+
+<p class="mt-4">
+  <a class="btn btn-primary" href="{{ url_for('booking.book') }}"
+    >Book a Service</a
+  >
+</p>
+<p>
+  <a class="btn btn-secondary" href="{{ url_for('store.store') }}"
+    >Visit Store</a
+  >
+</p>
+{% endblock %}

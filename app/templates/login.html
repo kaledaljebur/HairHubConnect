@@ -1,0 +1,26 @@
+{% extends "layout.html" %} {% block content %}
+<h2>Login</h2>
+<form method="post">
+  <div class="mb-3">
+    <input
+      class="form-control"
+      type="text"
+      name="username"
+      placeholder="Username"
+    />
+  </div>
+  <div class="mb-3">
+    <input
+      class="form-control"
+      type="password"
+      name="password"
+      placeholder="Password"
+    />
+  </div>
+  <button class="btn btn-success">Login</button>
+</form>
+<p>
+  Don't have an account?
+  <a href="{{ url_for('auth.register') }}">Register here</a>
+</p>
+{% endblock %}

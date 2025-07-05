@@ -1,0 +1,7 @@
+{% extends "layout.html" %} {% block content %}
+<h1>Welcome to Hair Salon</h1>
+<p>
+  <a href="{{ url_for('auth.login') }}">Login</a> or
+  <a href="{{ url_for('auth.register') }}">Register</a>
+</p>
+{% endblock %}
