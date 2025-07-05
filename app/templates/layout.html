@@ -41,8 +41,9 @@
           <ul class="navbar-nav ms-auto">
             {% if current_user.is_authenticated %}
             <li class="nav-item">
-              <span class="navbar-text me-3"
-                >Hello, {{ current_user.username }}</span
+              <!-- <span class="navbar-text me-3">-->
+              <span class="navbar-brand">
+                Hello, {{ current_user.username }}</span
               >
             </li>
             <li class="nav-item">
