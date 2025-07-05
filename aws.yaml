@@ -1,0 +1,114 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Deploys HairHubConnect Flask-based salon booking and product store app on a public EC2 instance within a VPC. Created by Kaled Aljebur.
+
+Parameters:
+  VpcCIDR:
+    Default: 10.10.0.0/16
+    Type: String
+  PublicSubnetCIDR:
+    Default: 10.10.10.0/24
+    Type: String
+  SSHCIDR:
+    Default: 0.0.0.0/0
+    Type: String
+  HTTPCIDR:
+    Default: 0.0.0.0/0
+    Type: String
+
+Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCIDR
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+
+  IGW:
+    Type: AWS::EC2::InternetGateway
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref IGW
+
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref PublicSubnetCIDR
+      MapPublicIpOnLaunch: true
+
+  RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref RouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref IGW
+
+  SubnetRouteAssoc:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet
+      RouteTableId: !Ref RouteTable
+
+  SGSSH:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow SSH
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref SSHCIDR
+
+  SGHTTP:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow HTTP
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: !Ref HTTPCIDR
+
+  HairHubKeyPair:
+    Type: AWS::EC2::KeyPair
+    Properties:
+      KeyName: HairHubKeyPair
+
+  WebInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-0889a44b331db0194
+      SubnetId: !Ref PublicSubnet
+      SecurityGroupIds:
+        - !Ref SGSSH
+        - !Ref SGHTTP
+      KeyName: HairHubKeyPair
+      UserData: !Base64
+        Fn::Sub: |
+          #!/bin/bash
+          yum update -y
+          yum install -y git python3 python3-pip
+          cd /home/ec2-user
+          git clone https://github.com/kaledaljebur/HairHubConnect.git
+          cd HairHubConnect
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install flask flask-login flask-sqlalchemy werkzeug
+          export FLASK_APP=run.py
+          flask run --host=0.0.0.0 --port=80 > flask.log 2>&1 &
+
+Outputs:
+  PublicIP:
+    Description: EC2 Public IP
+    Value: !GetAtt WebInstance.PublicIp
